@@ -22,26 +22,22 @@ const park = {
     },
 };
 
-console.log(kim.getFullName()); // 김 아무개
-console.log(lee.getFullName()); // 이 아무개
-console.log(park.getFullName()); // 박 아무개
+console.log(kim.getFullName()); // 아무개 김
+console.log(lee.getFullName()); // 아무개 이
+console.log(park.getFullName()); // 아무개 박
 
-function User() {
-    this.firstName = this.firstName;
-    this.lastName = this.lastName;
+function User(firstName, lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
 
     this.getFullName = function () {
         return `${this.firstName} | ${this.lastName}`;
     };
 }
 
-User.prototype.getFullName = function () {
-    return `${this.firstName} | ${this.lastName}`;
-}; // => 딱 한 번만 만들어진다. => 딱 한 번만 만들어진 함수를 참조한다.
-
-const userKim = new User("아무개", "김"); // 생성자 함수 - 하나의 객체 데이터
-const userLee = new User("아무개", "이"); // 생성자 함수 - 하나의 객체 데이터
-const userPark = new User("아무개", "박"); // 생성자 함수 - 하나의 객체 데이터
+const userKim = new User("김", "아무개"); // 생성자 함수 - 하나의 객체 데이터
+const userLee = new User("이", "아무개"); // 생성자 함수 - 하나의 객체 데이터
+const userPark = new User("박", "아무개"); // 생성자 함수 - 하나의 객체 데이터
 
 console.log(userKim);
 console.log(userLee);

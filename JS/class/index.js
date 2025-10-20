@@ -1,12 +1,12 @@
-// 1. 프로토타입(Prototype)의 역할
+// 1. 프로토타입(prototype)의 역할
 // 자바스크립트는 프로토타입 기반 언어입니다.
 
-// 정의: 프로토타입(Prototype)은 객체가 다른 객체의 기능(속성과 메서드)을 물려받는 상속 메커니즘의 핵심입니다.
+// 정의: 프로토타입(prototype)은 객체가 다른 객체의 기능(속성과 메서드)을 물려받는 상속 메커니즘의 핵심입니다.
 // 작동 방식: 모든 객체는 자신을 만들어낸 프로토타입 객체를 참조하며, 자신이 가지고 있지 않은 속성이나 메서드를 요청받으면
-// 이 프로토타입 객체를 따라 올라가며(이를 프로토타입 체인이라 합니다.) 해당 기능을 찾습니다.
-// 핵심: 클래스의 본질은 결국 같은 프로토타입을 공유하고 상속받는 객체들의 집합입니다.
+// 이 프로토타입 객체를 따라 올라가며(이를 프로토타입 체인이라고 합니다.) 해당 기능을 찾습니다.
+// 핵심: 클래스 본질은 결국 같은 프로토타입을 공유하고 상속받는 객체들의 집합입니다.
 
-// 2. 클래스(Class)의 의미
+// 2. 클래스(class)의 의미
 // 자바스크립트 클래스(class)는 비슷한 성질을 가진 객체들을 만들기 위한 틀(설계도) 입니다.
 // class 키워드는 프로토타입 기반 상속을 더 쉽고 익숙한 문법으로 사용할 수 있게 해줍니다.
 
@@ -36,7 +36,6 @@ const animalPrototype = {
 
 // animalPrototype을 상속하는 객체 만들기
 const dog = Object.create(animalPrototype);
-
 dog.bark = function () {
     console.log("멍멍!");
 };
@@ -50,7 +49,7 @@ console.log(dog);
 // 프로토타입 객체 만들기
 const carPrototype = {
     start() {
-        console.log("엔진이 켜졌습니다!");
+        console.log("엔진이 켜졌습니다.");
     },
     stop() {
         console.log("엔진이 꺼졌습니다.");
@@ -62,12 +61,12 @@ const myCar = Object.create(carPrototype);
 
 myCar.brand = "TESLA";
 myCar.drive = function () {
-    console.log(`${myCar.brand}이/가 자율주행모드로 달리고 있습니다!`);
+    console.log(`${myCar.brand}이/가 자율주행모드로 달리고 있습니다.`);
 };
 
-myCar.start(); // 엔진이 켜졌습니다!
-myCar.drive(); // TESLA이/가 자율주행모드로 달리고 있습니다!
-myCar.stop(); // 엔진이 꺼졌습니다.
+myCar.start();
+myCar.drive();
+myCar.stop();
 
 console.log(myCar);
 
@@ -76,18 +75,18 @@ let user = {
     lastName: "Park",
     age: 33,
     getFullName: function () {
-        // user는 바깥 스코프에 정의된 전역 변수이므로 함수 안에서도 접근 가능
         return `${user.firstName} | ${user.lastName}`;
     },
 };
+
 console.log(user.getFullName()); // 9Diin | Park
 
 // getFullName에서 어떻게 user 내부의 프로퍼티에 접근할 수 있었을까요?
 // 이유는 자바스크립트의 스코프 체인 덕분입니다.
-// 자바스크립트에서 변수나 식별자를 찾을 때, 현재 스코프 -> 바로 바깥 스코프 -> 그 바깥 ... -> 전역 스코프 순서대로 찾아 나갑니다.
-// 이 연결 구조가 마치 체인처럼 연결되어 있어서 '스코프 체인'이라고 부릅니다.
+// 자바스크립트에서 변수나 식별자를 찾을 때, 현재 스코프 -> 바깥 스코프 -> 그 바깥 ... -> 전역 스코프 순서대로 찾아 나갑니다.
+// 이 연결 구조가 마치 체인처럼 연결되어 있어서 "스코프 체인"이라 부릅니다.
 
-// user 객체는 함수 바깥에 선언되어 있어서 함수 안에서도 접근할 수 있는 거예요.
+// user 객체는 함수 바깥에 선언되어 있어서 함수 안에서도 접근할 수 있는 겁니다.
 // 즉, 전역 혹은 바깥 블록에 선언된 이름을 함수 내부에서 참조하는 것은 문제 없이 됩니다.
 
 // 그러나 이렇게 작성하는 건 위험할 수 있습니다.
@@ -100,13 +99,13 @@ console.log(user.getFullName()); // 9Diin | Park
 let user2 = user;
 user2 = null;
 
-console.log(user2.getFullName()); // Uncaught TypeError: Cannot read properties of null (reading 'getFullName')
+// console.log(user2.getFullName()); // Cannot read properties of null (reading 'getFullName')
 
 // 그래서 더 안전하고 일반적인 방식은?
 // this 키워드를 사용하여 getFullName을 호출한 객체, 즉 user를 가리킵니다.
 // 따라서 객체의 자기 자신의 프로퍼티를 참조하는 가장 안전하고 유연한 방법입니다.
 
-const user3 = {
+let user3 = {
     firstName: "9Diin",
     lastName: "Park",
     age: 33,
@@ -127,4 +126,5 @@ function user4() {
     };
 }
 
-console.log(user4().getFullName()); // "홍 | 길동"
+const res = new user4();
+console.log(res.getFullName());

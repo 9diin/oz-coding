@@ -19,3 +19,81 @@
 
 // 사람 ===============> 컴파일러 혹은 인터프리터 ===============> 컴퓨터
 //       프로그래밍 언어                             기계어
+
+const insertBtn = document.querySelector(".input-box__btn");
+const inputField = document.querySelector(".input-box__input");
+const listContainer = document.querySelector(".list"); // 할 일 목록이 표시될 영역
+
+let todos = JSON.parse(localStorage.getItem("todos")) || []; // 기존 todos를 로드하거나 빈 배열로 초기화
+
+// 할 일을 화면에 출력하는 함수
+function renderTodos() {
+    listContainer.innerHTML = ""; // 기존 목록 초기화
+
+    if (todos.length === 0) {
+        const emptyMessage = document.createElement("p");
+
+        emptyMessage.classList.add("list__empty");
+        emptyMessage.textContent = "등록된 TO DO TASK가 없습니다.";
+
+        listContainer.appendChild(emptyMessage);
+
+        return; // 이후 코드 실행하지 않음
+    }
+
+    todos.forEach((todo, index) => {
+        const listItem = document.createElement("li");
+        listItem.classList.add("list__item");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.classList.add("list__item__checkbox");
+
+        const todoText = document.createElement("p");
+        todoText.classList.add("list__item__todo");
+        todoText.textContent = todo;
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.classList.add("list__item__btn");
+        deleteBtn.innerHTML = '<i data-lucide="x"></i>';
+
+        deleteBtn.addEventListener("click", () => {
+            todos.splice(index, 1);
+            localStorage.setItem("todos", JSON.stringify(todos));
+
+            renderTodos();
+        });
+
+        listItem.appendChild(checkbox);
+        listItem.appendChild(todoText);
+        listItem.appendChild(deleteBtn);
+
+        listContainer.appendChild(listItem);
+    });
+
+    lucide.createIcons();
+}
+
+// 페이지가 로드되면 할 일 목록을 렌더링
+renderTodos();
+
+// + 버튼 클릭 시, 할 일을 추가하고 로컬스토리지에 저장
+insertBtn.addEventListener("click", () => {
+    const inputValue = inputField.value.trim();
+
+    if (!inputValue) {
+        alert("테스크를 입력하세요.");
+        return; // 입력 값이 없으면 함수를 종료
+    }
+
+    // 중복을 피하고, 입력된 할 일을 todos 배열에 추가
+    if (!todos.includes(inputValue)) {
+        todos.push(inputValue); // 새로운 할 일을 todos 배열에 추가
+        localStorage.setItem("todos", JSON.stringify(todos)); // todos 배열을 로컬스토리지에 저장
+    } else {
+        alert("이 할 일은 이미 존재합니다.");
+    }
+
+    inputField.value = ""; // 버튼 클릭 후 입력 필드 초기화
+    renderTodos();
+});

@@ -7,7 +7,7 @@
 const timer = {
     name: "Park",
     timeout: function () {
-        setTimeout(() => {
+        setTimeout(function () {
             console.log(this.name);
         }, 2000);
     },

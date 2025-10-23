@@ -25,115 +25,123 @@ function test() {
         console.log("B");
     });
 }
+test(); // B => 1초 뒤에 => A
 
-function a() {
-    return new Promise((resolve, reject) => {
+function a1() {
+    return new Promise((resolve) => {
         setTimeout(() => {
-            console.log("A");
+            console.log("A1");
             resolve();
         }, 1000);
     });
 }
 
-function b() {
-    return new Promise((resolve, reject) => {
+function b1() {
+    return new Promise((resolve) => {
         setTimeout(() => {
-            console.log("B");
+            console.log("B1");
             resolve();
         }, 1000);
     });
 }
 
-function c() {
-    return new Promise((resolve, reject) => {
+function c1() {
+    return new Promise((resolve) => {
         setTimeout(() => {
-            console.log("C");
+            console.log("C1");
             resolve();
         }, 1000);
     });
 }
 
-function d() {
-    return new Promise((resolve, reject) => {
+function d1() {
+    return new Promise((resolve) => {
         setTimeout(() => {
-            console.log("D");
+            console.log("D1");
             resolve();
         }, 1000);
     });
 }
 
-function test() {
-    a().then(() => {
-        b().then(() => {
-            c().then(() => {
-                d().then(() => {
+function test2() {
+    a1().then(() => {
+        b1().then(() => {
+            c1().then(() => {
+                d1().then(() => {
                     console.log("Done!");
                 });
             });
         });
     });
 }
+test2();
 
-function test() {
+function test3() {
     a()
         .then(() => {
-            return b(); // 결국, Promise 약속의 객체를 반환하기 때문에
+            return b1();
         })
         .then(() => {
-            return c();
+            return c1();
         })
         .then(() => {
-            return d();
+            return d1();
         })
         .then(() => {
             console.log("Done!");
         });
 }
+test3();
 
-function test() {
-    a()
-        .then(() => b())
-        .then(() => c())
-        .then(() => d())
+function test4() {
+    a1()
+        .then(() => b1())
+        .then(() => c1())
+        .then(() => d1())
         .then(() => {
             console.log("Done!");
         });
 }
+test4();
 
 function a(number) {
     return new Promise((resolve, reject) => {
         if (number > 5) {
-            reject(); // 거부
+            reject(`입력받은 number: ${number} -> number의 값이 5보다 큽니다.`); // 거부
             return; // 함수를 종료 시키기 위해
         }
         setTimeout(() => {
             console.log("A");
-            resolve(); // 이행
+            resolve("성공!"); // 이행
         }, 1000);
     });
 }
 
-function test() {
-    a(10)
-        .then(() => {
-            console.log("resolve");
+function test5() {
+    a(1000)
+        .then((res) => {
+            console.log("res: ", res);
+            console.log("resolve 동작!");
         })
-        .catch(() => {
-            console.log("reject");
+        .catch((error) => {
+            console.log("error: ", error);
+            console.log("reject 동작!");
         })
         .finally(() => {
-            console.log("Done"); // resolve, reject 상관없이 무조건 실행
+            console.log("Done!");
         });
 }
-test();
+test5();
 
-async function test() {
+async function test6() {
     try {
-        await a(1);
-        console.log("resolve");
+        await a(100);
+        console.log("resolve 동작!");
     } catch (error) {
-        console.log(error);
+        console.log("error: ", error);
+        console.log("reject 동작!");
     } finally {
-        console.log("Done");
+        console.log("Done!"); // resolve, reject 상관없이 무조건 실행
     }
 }
+test6();

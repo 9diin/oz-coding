@@ -1,0 +1,175 @@
+/* 전역 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    font-family: "Noto Sans KR", sans-serif;
+    font-size: 14px;
+}
+
+.page {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.container {
+    width: 100%;
+    max-width: 480px;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 32px 36px;
+    gap: 20px;
+
+    border: 1px solid gray;
+    border-radius: 16px;
+}
+
+/* 헤더 */
+header {
+    h1 {
+        font-family: "Poppins", sans-serif;
+
+        font-weight: 500;
+        font-size: 28px;
+    }
+}
+
+/* 메인 */
+main {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+
+    .input-box {
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+
+        gap: 16px;
+
+        .input-box__input {
+            flex: 1;
+
+            padding: 8px 12px;
+
+            font-size: 16px;
+
+            border: none;
+            border-bottom: 1px solid gray;
+        }
+        .input-box__input:focus {
+            outline: none;
+        }
+
+        .input-box__btn {
+            width: 36px;
+            height: 36px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 10px;
+            background-color: black;
+
+            cursor: pointer;
+
+            outline: none;
+            border: none;
+
+            svg {
+                color: white;
+            }
+        }
+    }
+
+    .list {
+        width: 100%;
+        height: 300px;
+
+        display: flex;
+        flex-direction: column;
+
+        gap: 12px;
+
+        overflow-y: scroll;
+
+        .item {
+            width: 100%;
+
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+            padding: 14px 16px;
+
+            border: 1px solid gray;
+            border-radius: 12px;
+
+            .item__checkbox {
+                width: 16px;
+                height: 16px;
+
+                cursor: pointer;
+            }
+            .item__content {
+                flex: 1;
+                font-weight: 500;
+            }
+            .completed {
+                text-decoration: line-through;
+                color: rgb(170, 170, 170);
+            }
+            .item__btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                background: transparent;
+                border: none;
+
+                cursor: pointer;
+
+                svg {
+                    width: 18px;
+                    height: 18px;
+                }
+            }
+        }
+    }
+    .list__empty {
+        width: 100%;
+        height: 300px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* 푸터 */
+footer {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+footer > p {
+    font-style: italic;
+}
+footer > p:first-child {
+    font-weight: 500;
+}
+footer > p:last-child {
+    color: rgb(170, 170, 170);
+}

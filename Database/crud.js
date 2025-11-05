@@ -60,10 +60,10 @@ db.movies.insertMany(
 // "_id" 값이 4인 도큐먼트를 삭제하려면 다음과 같이 mongo 셸에서 deleteOne을 사용합니다.
 
 db.movies.find()
-{ "_id": 0, "title": "Top Gun" }
-{ "_id": 1, "title": "Back to the Future" }
-{ "_id": 2, "title": "Sixteen Candles" }
-{ "_id": 3, "title": "The Terminator" }
+// { "_id": 0, "title": "Top Gun" }
+// { "_id": 1, "title": "Back to the Future" }
+// { "_id": 2, "title": "Sixteen Candles" }
+// { "_id": 3, "title": "The Terminator" }
 
 
 db.movies.deleteOne({"_id": 4})
@@ -88,9 +88,84 @@ db.movies.deleteMany({ "genre": "comedy" });
 // → 코미디 영화 문서가 10개면, 10개가 전부 삭제됩니다.
 
 // 전체 삭제 조심!
-// 빈 필터 {}를 넣으면 컬렉션 전체가 제거됩니다.
+// 빈 필터 {}를 넣으면 컬렉션 내부의 모든 문서를 삭제
 db.movies.deleteMany({})
 // 이 명령은 삭제 폭탄이니 조심해야 합니다! (테이블 초기화 같은 효과)
+// 컬렉션(테이블) 자체는 남아있음
+// 즉, 내용만 싹 지우는 것
 
 // 그러나 전체 컬렉션을 삭제하려면 다음과 같이 drop을 사용하는 편이 더 빠릅니다.
 db.movies.drop()
+// 컬렉션 자체가 삭제
+// 내부 문서 + 컬렉션 구조 + 인덱스 모두 삭제
+// 마치 테이블을 아예 없애는 것과 동일
+// 즉, 테이블을 통째로 없애는 것
+
+// 3. 도큐먼트 갱신
+// 도큐먼트를 데이터베이스에 저장한 후에는 updateOne, updateMany, replaceOne과 같은 갱신 메서드를 사용해 변경합니다.
+// updateOne, updateMany는 필터 도큐먼트를 첫 번째 매개변수로, 변경 사항을 설명하는 수정자 도큐먼트를 두 번째 매개변수로 사용합니다.
+// replaceOne도 첫 번째 매개변수를 필터로 사용하지만 두 번째 매개변수는 필터와 일치하는 도큐먼트를 교체할 도큐먼트입니다.
+
+// 3.1 도큐먼트 치환
+// replaceOne은 도큐먼트를 새로운 것으로 완전히 치환합니다.
+{
+    "_id" : ObjectId("abcdefghijklmnopqrstuvwxyz"),
+    "name" : "joe",
+    "friends" : 32,
+    "enemies" : 2
+}
+
+// "friends"와 "enemies" 필드를 "relationships"라는 서브 도큐먼트로 옮겨보도록 하겠습니다.
+// 셸에서 도큐먼트의 구조를 수정한 후 replaceOne을 사용해 데이터베이스의 버전을 교체합니다.
+
+// - 새 구조로 변활할 목표
+{
+    "_id" : ObjectId("abcdefghijklmnopqrstuvwxyz"), // _id는 유지
+    "name" : "joe",
+    "relationships" : {    
+        "friends" : 32,
+        "enemies" : 2
+    }
+}
+
+const joe = db.users.findOne({ "name" : "joe" });
+joe.relationships = { "friends" : joe.friends, "enemies" : joe.enemies };
+
+joe.username = joe.name;
+
+delete joe.friends;
+delete joe.enemies;
+delete joe.name;
+
+db.users.replaceOne({ "_id": joe._id }, joe);
+
+// 3.2 갱신 연산자
+// MongoDB에서 문서를 수정할 때, 
+// - 전체 문서를 바꾸지 않고
+// - 필요한 부분만 수정하는 경우가 대부분입니다.
+
+// 이를 위해 MongoDB는 갱신 연산자(update operator)라는 특별한 키를 제공합니다.
+// 이 연산자들은 아래와 같은 일을 합니다.
+
+// - $set : 필드 값 바꾸기
+// - $inc : 숫자 늘리기/줄이기
+// - $unset : 필드 삭제
+// - $push : 배열에 값 넣기
+// - $pull : 배열에서 값 빼기
+
+db.users.insertOne({
+    name: "Park",
+    age: 25,
+    friends: 3,
+    hobbies: ["games", "music"],
+    profile: {
+        city: "Seoul",
+        level: 1
+    }
+})
+
+// 1. park의 age를 26으로 변경하세요.
+db.users.updateOne({ "name": "park" }, { $set: { age: 33 }})
+
+// 2. park의 친구 수(friends)를 2명 증가시키세요.
+db.users.updateOne({ "name": "park" }, { $inc: { friends: 2 }})

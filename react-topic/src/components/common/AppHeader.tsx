@@ -7,13 +7,9 @@ function AppHeader() {
             <div className="w-full max-w-[1328px] h-full flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     {/* <img src="" alt="@LOGO" /> */}
-                    <NavLink to={"/"} className="text-white">
-                        토픽 인사이트
-                    </NavLink>
+                    <NavLink to={"/"}>토픽 인사이트</NavLink>
                     <Separator orientation="vertical" className="h-3!" />
-                    <NavLink to={"/user/:id/profile"} className="text-white">
-                        프로필
-                    </NavLink>
+                    <NavLink to={"/user/:id/profile"}>프로필</NavLink>
                 </div>
                 <div className="flex items-center gap-4">
                     <NavLink to={"/sign-in"} className="text-neutral-400 hover:text-white duration-300">

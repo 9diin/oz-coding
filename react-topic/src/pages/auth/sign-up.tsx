@@ -4,7 +4,9 @@ function SignUp() {
     return (
         <div>
             <AppHeader />
-            <main>회원가입 페이지</main>;
+            <main className="w-full flex-1 flex justify-center">
+                <div className="w-full max-w-[1328px] h-full flex items-center justify-center bg-red-500"></div>
+            </main>
             <AppFooter />
         </div>
     );

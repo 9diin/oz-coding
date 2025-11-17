@@ -1,7 +1,8 @@
-import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input, Label } from "@/components/ui";
+import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "@/components/ui";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { NavLink, useNavigate } from "react-router";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -12,6 +13,7 @@ const formSchema = z.object({
 });
 
 function SignIn() {
+    const navigate = useNavigate();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -78,6 +80,17 @@ function SignIn() {
                         </form>
                     </Form>
                 </CardContent>
+                <CardFooter>
+                    <div className="w-full flex items-center justify-center gap-2 -mt-3">
+                        <p>계정이 없으신가요?</p>
+                        {/* <Button variant={"link"} className="p-0 underline" onClick={() => navigate("/sign-up")}>
+                            회원가입
+                        </Button> */}
+                        <NavLink to={"/sign-up"} className="underline underline-offset-4">
+                            회원가입
+                        </NavLink>
+                    </div>
+                </CardFooter>
             </Card>
         </div>
     );

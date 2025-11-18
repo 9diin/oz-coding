@@ -1,11 +1,12 @@
 import { NavLink, useNavigate } from "react-router";
+import supabase from "@/utils/supabase";
+
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "@/components/ui";
+import { toast } from "sonner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import supabase from "@/utils/supabase";
-import { toast } from "sonner";
 
 const formSchema = z.object({
     email: z.email("올바른 형식의 이메일 주소를 입력해주세요."),

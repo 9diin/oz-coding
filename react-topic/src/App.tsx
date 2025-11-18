@@ -38,11 +38,11 @@ function App() {
             </aside>
             <div className="min-h-screen flex-1 bg-amber-500 flex flex-col gap-12">
                 {/* 검색창 */}
-                <section></section>
+                <section>검색창 섹션</section>
                 {/* HOT 토픽 */}
-                <section></section>
+                <section>HOT 토픽 섹션</section>
                 {/* NEW 토픽 */}
-                <section></section>
+                <section>NEW 토픽 섹션</section>
             </div>
         </div>
     );

@@ -1,8 +1,8 @@
+import { NavLink } from "react-router";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "@/components/ui";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { NavLink, useNavigate } from "react-router";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -13,7 +13,6 @@ const formSchema = z.object({
 });
 
 function SignIn() {
-    const navigate = useNavigate();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -30,26 +30,38 @@ function SignUp() {
         },
     });
 
+    const navigate = useNavigate();
     // 필수 동의항목 상태값
     const [serviceAgreed, setServiceAgreed] = useState<boolean>(true); // 서비스 이용약관 동의 여부
-    const [privacyAgreed, setPrivacyAgreed] = useState<boolean>(true);
+    const [privacyAgreed, setPrivacyAgreed] = useState<boolean>(true); // 개인정보 수집 및 이용동의 여부
 
+    // 일반 회원가입
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log("values: ", values);
-
         if (!serviceAgreed || !privacyAgreed) {
             toast.warning("잠깐! 필수 동의가 아직 완료되지 않았어요!");
             return;
         }
 
         try {
-            const { data, error: supabaseError } = await supabase.auth.signUp({
+            const {
+                data: { user, session },
+                error: signUpError,
+            } = await supabase.auth.signUp({
                 email: values.email,
                 password: values.password,
             });
 
-            console.log(supabaseError);
-            console.log("data:", data);
+            if (signUpError) {
+                toast.error(signUpError.message === "User already registered" ? "이미 가입된 계정입니다." : "회원가입 중 오류가 발생했습니다.");
+                return;
+            }
+
+            // user와 session 두 값 모두 null이 아닐 경우에만 회원가입이 완료되었음을 의미
+            if (user && session) {
+                // 회원가입 성공 시,
+                toast.success("회원가입을 완료하였습니다.");
+                navigate("/sign-in"); // => 로그인 페이지로 리디렉션
+            }
         } catch (error) {
             console.log(error);
             throw error;

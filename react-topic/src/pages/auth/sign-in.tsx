@@ -1,9 +1,11 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "@/components/ui";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import supabase from "@/utils/supabase";
+import { toast } from "sonner";
 
 const formSchema = z.object({
     email: z.email("올바른 형식의 이메일 주소를 입력해주세요."),
@@ -20,10 +22,34 @@ function SignIn() {
             password: "",
         },
     });
+    const navigate = useNavigate();
 
-    // 로그인
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log(values);
+    // 일반 로그인
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        try {
+            const {
+                data: { user, session },
+                error: signInError,
+            } = await supabase.auth.signInWithPassword({
+                email: values.email,
+                password: values.password,
+            });
+
+            if (signInError) {
+                toast.error(signInError.message === "Invalid login credentials" ? "입력하신 정보가 일치하지 않습니다." : "로그인 중 오류가 발생하였습니다.");
+                return;
+            }
+
+            // user와 session 두 값 모두 null이 아닐 경우에만 로그인이 완료되었음을 의미
+            if (user && session) {
+                // 로그인 성공 시,
+                toast.success("로그인을 완료하였습니다.");
+                navigate("/"); // => 메인 페이지로 리디렉션
+            }
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
     };
 
     return (

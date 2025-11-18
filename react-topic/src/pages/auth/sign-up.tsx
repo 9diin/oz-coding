@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
+import supabase from "@/utils/supabase";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -8,7 +9,6 @@ import { z } from "zod";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Checkbox, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Separator } from "@/components/ui";
 import { ArrowLeft, Asterisk, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
-import supabase from "@/utils/supabase";
 
 const formSchema = z
     .object({
@@ -46,6 +46,7 @@ function SignUp() {
     // 필수 동의항목 상태값
     const [serviceAgreed, setServiceAgreed] = useState<boolean>(true); // 서비스 이용약관 동의 여부
     const [privacyAgreed, setPrivacyAgreed] = useState<boolean>(true); // 개인정보 수집 및 이용동의 여부
+    const [marketingAgreed, setMarketingAgreed] = useState<boolean>(true); // 마케팅 및 광고 수신 동의 여부
 
     // 일반 회원가입
     const onSubmit = async (values: z.infer<typeof formSchema>) => {

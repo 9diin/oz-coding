@@ -1,6 +1,8 @@
-import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Icon, Lightbulb, List, Rocket, Search } from "lucide-react";
+import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Icon, Lightbulb, List, PencilLine, Rocket, Search } from "lucide-react";
 import { Button, Input } from "./components/ui";
 import { HotTopic, NewTopic } from "./components/topic";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
 
 const CATEGORIES = [
     // { icon: List, label: "전체" },
@@ -14,9 +16,21 @@ const CATEGORIES = [
 ];
 
 function App() {
+    const navigate = useNavigate();
+    // const user = null;
+
+    const moveToPage = () => {
+        // 1. 로그인 여부 체크
+        // if (!user) {
+        //     toast.warning("토픽 작성은 로그인 후 이용 가능합니다.");
+        //     return;
+        // }
+        navigate("/create-topic");
+    };
+
     return (
         <div className="w-full max-w-[1328px] h-full flex items-start py-6 gap-6">
-            <aside className="w-60 min-w-60 flex flex-col gap-4">
+            <aside className="sticky top-18 w-60 min-w-60 flex flex-col gap-4">
                 <div className="flex items-center gap-3">
                     <p className="text-xl font-semibold">카테고리</p>
                     <ChevronDown />
@@ -88,6 +102,10 @@ function App() {
                     </div>
                 </section>
             </div>
+            <Button variant={"destructive"} className="fixed bottom-6 left-1/2 -translate-1/2 p-5! rounded-full opacity-75" onClick={moveToPage}>
+                <PencilLine />
+                토픽 작성하기
+            </Button>
         </div>
     );
 }

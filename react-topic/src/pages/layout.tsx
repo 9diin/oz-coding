@@ -9,7 +9,7 @@ function RootLayout() {
             <div className="w-full h-screen flex flex-col">
                 <AppHeader />
                 {/* 페이지별 콘텐츠 영역 */}
-                <main className="w-full flex-1 flex justify-center">
+                <main className="w-full flex-1 flex justify-center mt-12">
                     <Outlet />
                 </main>
                 <AppFooter />

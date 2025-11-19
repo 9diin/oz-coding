@@ -1,6 +1,6 @@
 import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Icon, Lightbulb, List, Rocket, Search } from "lucide-react";
 import { Button, Input } from "./components/ui";
-import { NewTopic } from "./components/topic";
+import { HotTopic, NewTopic } from "./components/topic";
 
 const CATEGORIES = [
     // { icon: List, label: "전체" },
@@ -56,7 +56,21 @@ function App() {
                     </div>
                 </section>
                 {/* HOT 토픽 */}
-                <section>HOT 토픽 섹션</section>
+                <section className="flex flex-col gap-6">
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                            <img src="/gifs/writing-hand.gif" alt="@WRITING-HAND_GIFS" className="w-7 mb-2" />
+                            <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">HOT 토픽</h4>
+                        </div>
+                        <p className="text-neutral-500 text-base">지금 가장 주목받는 주제들을 살펴보고, 다양한 관점의 인사이트를 얻어보세요.</p>
+                    </div>
+                    <div className="grid grid-cols-4 gap-6">
+                        <HotTopic />
+                        <HotTopic />
+                        <HotTopic />
+                        <HotTopic />
+                    </div>
+                </section>
                 {/* NEW 토픽 */}
                 <section className="flex flex-col gap-6">
                     <div className="flex flex-col">

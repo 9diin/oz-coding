@@ -7,6 +7,7 @@ export { Field, FieldLabel, FieldDescription, FieldError, FieldGroup, FieldLegen
 export { useFormField, Form, FormItem, FormLabel, FormControl, FormDescription, FormMessage, FormField } from "./form";
 export { Input } from "./input";
 export { Label } from "./label";
+export { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue } from "./select";
 export { Separator } from "./separator";
 export { Toaster } from "./sonner";
 export { Spinner } from "./spinner";

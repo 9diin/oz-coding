@@ -1,3 +1,4 @@
+import { AppTextEditor } from "@/components/common";
 import { Button, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, Separator } from "@/components/ui";
 import { Asterisk, Image, ImageOff } from "lucide-react";
 
@@ -12,6 +13,16 @@ function CreateTopic() {
                         <p className="font-semibold text-base">토픽 작성하기</p>
                     </div>
                     <Separator />
+                    <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-1">
+                            <Asterisk size={14} className="text-[#FA6859]" />
+                            <p className="text-neutral-500 text-base">본문</p>
+                        </div>
+                        {/* Blocknote 텍스트 에디터 UI */}
+                        <div className="w-full h-screen">
+                            <AppTextEditor />
+                        </div>
+                    </div>
                 </div>
                 {/* STEP 02 */}
                 <div className="w-[314px] min-w-[314px] flex flex-col gap-6">

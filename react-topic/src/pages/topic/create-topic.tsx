@@ -23,7 +23,8 @@ function CreateTopic() {
         // }
         setThumbnail(event.target.files?.[0] ?? null);
 
-        console.log(event.target.files);
+        console.log("event.target.files: ", event.target.files);
+        console.log("event.target.value: ", event.target.value);
 
         // 동일 파일 선택이 불가능할 수 있으므로 event.target.value를 초기화
         event.target.value = "";

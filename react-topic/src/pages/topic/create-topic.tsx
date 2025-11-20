@@ -27,7 +27,31 @@ function CreateTopic() {
         console.log("event.target.value: ", event.target.value);
 
         // 동일 파일 선택이 불가능할 수 있으므로 event.target.value를 초기화
+        // 브라우저는 <input type="file">의 value가 변경되었을 때만 change를 발생시킴
         event.target.value = "";
+    };
+
+    // 이미지 미리보기
+    const handleRenderPreview = () => {
+        if (typeof thumbnail === "string") {
+            return <img src={thumbnail} alt="@THUMBNAIL" className="w-full aspect-video rounded-md object-cover border" />;
+        } else if (thumbnail instanceof File) {
+            // thumbnail은 File 객체여야 합니다.
+            // 예를 들어, <input type="file">에서 사용자가 선택한 파일을 나타내는 객체입니다.
+            // createObjectURL 메서드는 파일을 브라우저에서 사용할 수 있는 임시 URL로 변환합니다.
+            // 이 URL은 해당 파일에 대한 참조를 제공하며, 로컬에서만 유효합니다. 즉, 이 URL은 서버에서 접근할 수 없고, 클라이언트(사용자의 브라우저) 내에서만 유효합니다.
+            // 변환된 URL을 이미지, 비디오, 오디오 등의 미디어 파일에 사용할 수 있습니다.
+            return <img src={URL.createObjectURL(thumbnail)} alt="@THUMBNAIL" className="w-full aspect-video rounded-md object-cover border" />;
+        }
+
+        // 썸네일이 설정되지 않은 경우에는 기본 이미지 아이콘을 보여줍니다.
+        return (
+            <div className="w-full aspect-video flex items-center justify-center rounded-md bg-card">
+                <Button variant={"ghost"} size={"icon"} onClick={() => fileInputRef.current?.click()}>
+                    <Image />
+                </Button>
+            </div>
+        );
     };
 
     return (
@@ -100,12 +124,8 @@ function CreateTopic() {
                                 <p className="text-neutral-500 text-base">썸네일</p>
                             </div>
                             <div className="flex flex-col gap-2">
-                                <div className="w-full aspect-video flex items-center justify-center rounded-md bg-card">
-                                    <Button variant={"ghost"} size={"icon"} onClick={() => fileInputRef.current?.click()}>
-                                        <Image />
-                                    </Button>
-                                    <Input type="file" accept="image/*" ref={fileInputRef} onChange={handleChangeFile} className="hidden" />
-                                </div>
+                                {handleRenderPreview()}
+                                <Input type="file" accept="image/*" ref={fileInputRef} onChange={handleChangeFile} className="hidden" />
                                 {/* 썸네일 제거 버튼 */}
                                 <Button variant={"secondary"} className="bg-card" onClick={() => setThumbnail(null)}>
                                     <ImageOff />

@@ -1,12 +1,12 @@
 import { useRef, useState } from "react";
 import { AppTextEditor } from "@/components/common";
 import { Button, Input, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, Separator } from "@/components/ui";
-import { Asterisk, Image, ImageOff } from "lucide-react";
+import { ArrowLeft, Asterisk, BookOpenCheck, Image, ImageOff, Save, Trash2 } from "lucide-react";
 
 function CreateTopic() {
-    const [title, setTitle] = useState<string | null>(null);
+    const [title, setTitle] = useState<string>("");
     const [content, setContent] = useState(null);
-    const [category, setCategory] = useState<string | null>(null);
+    const [category, setCategory] = useState<string>("");
     const [thumbnail, setThumbnail] = useState<File | string | null>(null);
     // => File 타입의 원본 데이터를 받음
     // => Supabase의 이미지만 관리하는 Storage에 전달받은 File을 저장 => URL 형식으로
@@ -54,6 +54,18 @@ function CreateTopic() {
         );
     };
 
+    // 저장
+    const handleSave = async () => {
+        console.log("title : ", title);
+        console.log("category : ", category);
+        console.log("thumbnail : ", thumbnail);
+
+        // const { data, error } = await supabase
+        //     .from("topics")
+        //     .insert([{ some_column: "someValue", other_column: "otherValue" }])
+        //     .select();
+    };
+
     return (
         <main className="w-full flex-1 flex justify-center">
             <div className="w-full max-w-[1328px] h-full flex gap-6 py-6">
@@ -70,7 +82,7 @@ function CreateTopic() {
                                 <Asterisk size={14} className="text-[#FA6859]" />
                                 <p className="text-neutral-500 text-base">제목</p>
                             </div>
-                            <Input placeholder="토픽 제목을 입력하세요." className="h-16 placeholder:text-lg placeholder:font-semibold text-lg! font-semibold px-5 border-none" />
+                            <Input placeholder="토픽 제목을 입력하세요." value={title} onChange={(event) => setTitle(event.target.value)} className="h-16 placeholder:text-lg placeholder:font-semibold text-lg! font-semibold px-5 border-none" />
                         </div>
                         <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-1">
@@ -99,7 +111,7 @@ function CreateTopic() {
                                 <p className="text-neutral-500 text-base">카테고리</p>
                             </div>
                             {/* 셀렉트 박스 */}
-                            <Select>
+                            <Select value={category} onValueChange={(value) => setCategory(value)}>
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="토픽(주제) 선택" />
                                 </SelectTrigger>
@@ -135,6 +147,23 @@ function CreateTopic() {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className="fixed bottom-12 flex items-center gap-2">
+                <Button variant={"outline"} size={"icon"}>
+                    <ArrowLeft />
+                </Button>
+                <Button variant={"outline"} className="px-5! bg-amber-900/50!" onClick={handleSave}>
+                    <Save />
+                    저장
+                </Button>
+                <Button variant={"outline"} className="px-5! bg-emerald-900/50!">
+                    <BookOpenCheck />
+                    발행
+                </Button>
+                <Separator orientation="vertical" className="h-5!" />
+                <Button variant={"outline"} size={"icon"} className="bg-red-900/50!">
+                    <Trash2 />
+                </Button>
             </div>
         </main>
     );

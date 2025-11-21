@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useAuthStore } from "@/store/auth";
 
 const formSchema = z.object({
     email: z.email("올바른 형식의 이메일 주소를 입력해주세요."),
@@ -24,6 +25,7 @@ function SignIn() {
         },
     });
     const navigate = useNavigate();
+    const setUser = useAuthStore((state) => state.setUser);
 
     // 일반 로그인
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -41,9 +43,17 @@ function SignIn() {
                 return;
             }
 
+            console.log("user: ", user);
+            console.log("session: ", session);
+
             // user와 session 두 값 모두 null이 아닐 경우에만 로그인이 완료되었음을 의미
             if (user && session) {
                 // 로그인 성공 시,
+                setUser({
+                    id: user.id,
+                    email: user.email,
+                    role: user.role,
+                });
                 toast.success("로그인을 완료하였습니다.");
                 navigate("/"); // => 메인 페이지로 리디렉션
             }

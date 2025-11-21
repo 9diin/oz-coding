@@ -1,8 +1,10 @@
-import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Icon, Lightbulb, List, PencilLine, Rocket, Search } from "lucide-react";
+import { useNavigate } from "react-router";
+import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, PencilLine, Rocket, Search } from "lucide-react";
 import { Button, Input } from "./components/ui";
 import { HotTopic, NewTopic } from "./components/topic";
-import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import { useAuthStore } from "./store/auth";
+import supabase from "./utils/supabase";
 
 const CATEGORIES = [
     // { icon: List, label: "전체" },
@@ -17,15 +19,30 @@ const CATEGORIES = [
 
 function App() {
     const navigate = useNavigate();
-    // const user = null;
+    const user = useAuthStore((state) => state.user);
 
-    const moveToPage = () => {
+    const moveToPage = async () => {
         // 1. 로그인 여부 체크
-        // if (!user) {
-        //     toast.warning("토픽 작성은 로그인 후 이용 가능합니다.");
-        //     return;
-        // }
-        navigate("/create-topic");
+        if (!user) {
+            toast.warning("토픽 작성은 로그인 후 이용 가능합니다.");
+            return;
+        }
+
+        // 토픽 작성하기 버튼 클릭 시, (빈)토픽 생성
+        const { data, error } = await supabase
+            .from("topics")
+            .insert([{ author: user.id, title: null, category: null, thumbnail: null, content: null, status: "TEMP" }])
+            .select();
+
+        if (error) {
+            toast.error(error.message);
+            return;
+        }
+
+        if (data) {
+            toast.success("토픽을 생성하였습니다.");
+            navigate(`/topic/${data[0].id}/create`);
+        }
     };
 
     return (

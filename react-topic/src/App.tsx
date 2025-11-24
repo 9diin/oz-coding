@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { useAuthStore } from "./store/auth";
+
 import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, PencilLine, Rocket, Search } from "lucide-react";
 import { Button, Input } from "./components/ui";
 import { HotTopic, NewTopic } from "./components/topic";
 import { toast } from "sonner";
-import { useAuthStore } from "./store/auth";
 import supabase from "./utils/supabase";
 
 const CATEGORIES = [
@@ -20,6 +22,8 @@ const CATEGORIES = [
 function App() {
     const navigate = useNavigate();
     const user = useAuthStore((state) => state.user);
+
+    const [topics, setTopics] = useState([]);
 
     const moveToPage = async () => {
         // 1. 로그인 여부 체크
@@ -44,6 +48,28 @@ function App() {
             navigate(`/topic/${data[0].id}/create`);
         }
     };
+
+    const fetchTopics = async () => {
+        try {
+            const { data, error } = await supabase.from("topics").select("*").eq("status", "PUBLISH");
+
+            if (error) {
+                toast.error(error.message);
+                return;
+            }
+
+            if (data) {
+                setTopics(data);
+            }
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    };
+
+    useEffect(() => {
+        fetchTopics();
+    }, []);
 
     return (
         <div className="w-full max-w-[1328px] h-full flex items-start py-6 gap-6">
@@ -112,10 +138,9 @@ function App() {
                         <p className="text-neutral-500 text-base">새로운 시선으로, 새로운 이야기를 시작하세요. 지금 바로 당신만의 토픽을 작성해보세요.</p>
                     </div>
                     <div className="grid grid-cols-2 gap-6">
-                        <NewTopic />
-                        <NewTopic />
-                        <NewTopic />
-                        <NewTopic />
+                        {topics.map((topic) => (
+                            <NewTopic props={topic} />
+                        ))}
                     </div>
                 </section>
             </div>

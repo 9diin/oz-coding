@@ -60,7 +60,7 @@ function DetailTopic() {
     }, []);
 
     return (
-        <div className="w-full max-w-[1328px] min-h-[720px] flex-1 flex justify-center pb-6">
+        <div className="w-full max-w-[1328px] min-h-[720px] flex-1 flex flex-col justify-center pb-6">
             {/* 제목, 카테고리, 썸네일, 버튼박스 영역 */}
             <div className="relative w-full h-100 bg-cover bg-position-[50%_50%]" style={{ backgroundImage: `url(${topic?.thumbnail})` }}>
                 <div className="relative z-20 flex flex-col gap-6">
@@ -91,7 +91,7 @@ function DetailTopic() {
                 <div className="absolute inset-0 bg-linear-to-l from-[#0a0a0a] via-transparent to-transparent"></div>
             </div>
             {/* 콘텐츠 영역 */}
-            <div>{topic && <AppTextEditor props={JSON.parse(topic.content)} />}</div>
+            <div>{topic && <AppTextEditor props={JSON.parse(topic.content)} readonly={true} />}</div>
         </div>
     );
 }

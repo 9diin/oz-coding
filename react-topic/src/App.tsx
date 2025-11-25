@@ -11,13 +11,13 @@ import type { Topic } from "@/types";
 
 const CATEGORIES = [
     // { icon: List, label: "전체" },
-    { icon: Lightbulb, label: "인문학" },
-    { icon: Rocket, label: "스타트업" },
-    { icon: CodeXml, label: "IT·프로그래밍" },
-    { icon: Goal, label: "서비스·전략 기획" },
-    { icon: ChartNoAxesCombined, label: "마케팅" },
-    { icon: DraftingCompass, label: "디자인·일러스트" },
-    { icon: Footprints, label: "자기계발" },
+    { icon: Lightbulb, label: "인문학", value: "humidity" },
+    { icon: Rocket, label: "스타트업", value: "start-up" },
+    { icon: CodeXml, label: "IT·프로그래밍", value: "programming" },
+    { icon: Goal, label: "서비스·전략 기획", value: "planning" },
+    { icon: ChartNoAxesCombined, label: "마케팅", value: "marketing" },
+    { icon: DraftingCompass, label: "디자인·일러스트", value: "design" },
+    { icon: Footprints, label: "자기계발", value: "self-development" },
 ];
 
 function App() {
@@ -49,6 +49,13 @@ function App() {
             navigate(`/topic/${data[0].id}/create`);
         }
     };
+
+    // 1. 전체 항목을 클릭했을 경우, "전체"라는 항목의 value 값을 어떻게 할 것인가?
+    // 2. 이미 선택된 항목에 대해 즉, 선택된 항목 재선택시 어떻게 할 것인가?
+    // 3. 도메인 즉, URL에 카테고리 value 값을 보여줄 것인지 아닌지?
+    // 4. 결국, Supabase Read의 Filtering 기능 사용할 때 어떻게 할 것인가?
+    // 5. 검색 기능과의 차별점을 둘 것인가? (선택 사항)
+    const handleCategoryChange = () => {};
 
     const fetchTopics = async () => {
         try {

@@ -7,6 +7,7 @@ import { Button, Input } from "./components/ui";
 import { HotTopic, NewTopic } from "./components/topic";
 import { toast } from "sonner";
 import supabase from "./utils/supabase";
+import type { Topic } from "@/types";
 
 const CATEGORIES = [
     // { icon: List, label: "전체" },
@@ -23,7 +24,7 @@ function App() {
     const navigate = useNavigate();
     const user = useAuthStore((state) => state.user);
 
-    const [topics, setTopics] = useState([]);
+    const [topics, setTopics] = useState<Topic[]>([]);
 
     const moveToPage = async () => {
         // 1. 로그인 여부 체크

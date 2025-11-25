@@ -16,16 +16,7 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/auth";
 
-interface Topic {
-    id: number;
-    author: string; // 해당 토픽을 작성한 유저의 id
-    category: string;
-    content: string;
-    created_at: string | Date;
-    status: string;
-    thumbnail: string;
-    title: string;
-}
+import type { Topic } from "@/types";
 
 // http://localhost:5173/topic/topic_id
 function DetailTopic() {

@@ -8,7 +8,7 @@ function AppHeader() {
     const { user, reset } = useAuthStore();
 
     return (
-        <header className="fixed z-20 w-full h-12 min-h-12 flex items-center justify-center bg-[#121212] px-6">
+        <header className="fixed z-30 w-full h-12 min-h-12 flex items-center justify-center bg-[#121212] px-6">
             <div className="w-full max-w-[1328px] h-full flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     {/* <img src="" alt="@LOGO" /> */}

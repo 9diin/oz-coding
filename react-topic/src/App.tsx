@@ -129,7 +129,7 @@ function App() {
                     </div>
                 </section>
                 {/* NEW 토픽 */}
-                <section className="flex flex-col gap-6">
+                <section className="flex-1 flex flex-col gap-6">
                     <div className="flex flex-col">
                         <div className="flex items-center gap-2">
                             <img src="/gifs/writing-hand.gif" alt="@WRITING-HAND_GIFS" className="w-7 mb-2" />
@@ -137,11 +137,18 @@ function App() {
                         </div>
                         <p className="text-neutral-500 text-base">새로운 시선으로, 새로운 이야기를 시작하세요. 지금 바로 당신만의 토픽을 작성해보세요.</p>
                     </div>
-                    <div className="grid grid-cols-2 gap-6">
-                        {topics.map((topic) => (
-                            <NewTopic props={topic} />
-                        ))}
-                    </div>
+                    {topics.length === 0 ? (
+                        <div className="w-full flex-1 flex flex-col items-center justify-center gap-2">
+                            <img src="/vite.svg" alt="" className="w-6 h-6 opacity-50" />
+                            <p className="text-neutral-500/50">조회 가능한 데이터가 없습니다.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-2 gap-6">
+                            {topics.map((topic) => (
+                                <NewTopic props={topic} />
+                            ))}
+                        </div>
+                    )}
                 </section>
             </div>
             <Button variant={"destructive"} className="fixed bottom-6 left-1/2 -translate-1/2 p-5! rounded-full opacity-75" onClick={moveToPage}>

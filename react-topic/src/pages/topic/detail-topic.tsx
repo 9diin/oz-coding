@@ -5,19 +5,20 @@
 // - thumbnail: 썸네일
 // - category: 카테고리
 
-import { AppTextEditor } from "@/components/common";
-import { Button, Separator } from "@/components/ui";
-import supabase from "@/utils/supabase";
-import { ArrowLeft, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
-import { toast } from "sonner";
-
+import { useNavigate, useParams } from "react-router";
+import supabase from "@/utils/supabase";
 import dayjs from "dayjs";
+
+import { AppTextEditor } from "@/components/common";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, Button, Separator } from "@/components/ui";
+import { ArrowLeft, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { useAuthStore } from "@/store/auth";
 
 interface Topic {
     id: number;
-    author: string;
+    author: string; // 해당 토픽을 작성한 유저의 id
     category: string;
     content: string;
     created_at: string | Date;
@@ -29,6 +30,9 @@ interface Topic {
 // http://localhost:5173/topic/topic_id
 function DetailTopic() {
     const { topic_id } = useParams();
+    const navigate = useNavigate();
+
+    const user = useAuthStore((state) => state.user); // 현재 로그인한 유저
     const [topic, setTopic] = useState<Topic>();
 
     const fetchTopic = async () => {
@@ -55,6 +59,30 @@ function DetailTopic() {
         }
     };
 
+    // 토픽 삭제
+    // 토픽을 작성한 사람의 user_id와 (현재, 우리 Supabase Topics 데이터 테이블에서는 author 컬럼으로 관리 중)
+    // 로그인한 유저의 user_id가 일치할 경우에만, 본인이 작성한 글을 삭제하겠다는 것을 의미
+    const handleDelete = async () => {
+        // 방어 코드
+        if (user?.id !== topic?.author) {
+            return;
+        }
+
+        try {
+            const { error } = await supabase.from("topics").delete().eq("id", topic_id);
+
+            if (error) {
+                toast.error(error.message);
+                return;
+            }
+            toast.success("토픽 삭제를 완료하였습니다.");
+            navigate("/"); // 메인 페이지 리디렉션
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
         fetchTopic();
     }, []);
@@ -69,10 +97,29 @@ function DetailTopic() {
                         <Button variant={"outline"} size={"icon"}>
                             <ArrowLeft />
                         </Button>
+
                         {/* 삭제 */}
-                        <Button variant={"outline"} size={"icon"} className="bg-red-900/50!">
-                            <Trash2 />
-                        </Button>
+                        {user?.id === topic?.author && (
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant={"outline"} size={"icon"} className="bg-red-900/50!">
+                                        <Trash2 />
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>정말 해당 토픽을 삭제하시겠습니까?</AlertDialogTitle>
+                                        <AlertDialogDescription>삭제하시면 해당 토픽의 모든 내용이 영구적으로 삭제되어 복구할 수 없습니다.</AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>닫기</AlertDialogCancel>
+                                        <AlertDialogAction className="bg-red-900/50 text-white border hover:bg-red-800/50" onClick={handleDelete}>
+                                            삭제
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        )}
                     </div>
                     <div className="flex flex-col items-center gap-6 mt-28">
                         {/* 카테고리 */}

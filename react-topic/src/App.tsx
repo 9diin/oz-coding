@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { useAuthStore } from "./store/auth";
 
 import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, PencilLine, Rocket, Search } from "lucide-react";
@@ -10,7 +10,7 @@ import supabase from "./utils/supabase";
 import type { Topic } from "@/types";
 
 const CATEGORIES = [
-    // { icon: List, label: "전체" },
+    { icon: List, label: "전체", value: "" },
     { icon: Lightbulb, label: "인문학", value: "humidity" },
     { icon: Rocket, label: "스타트업", value: "start-up" },
     { icon: CodeXml, label: "IT·프로그래밍", value: "programming" },
@@ -23,8 +23,29 @@ const CATEGORIES = [
 function App() {
     const navigate = useNavigate();
     const user = useAuthStore((state) => state.user);
+    const [searchParams, setSearchParams] = useSearchParams();
+    // http://localhost:5173?category=humidity
+    const category = searchParams.get("category") || "";
 
     const [topics, setTopics] = useState<Topic[]>([]);
+
+    // 1. 전체 항목을 클릭했을 경우, "전체"라는 항목의 value 값을 어떻게 할 것인가?
+    // 2. 이미 선택된 항목에 대해 즉, 선택된 항목 재선택시 어떻게 할 것인가?
+    // 3. 도메인 즉, URL에 카테고리 value 값을 보여줄 것인지 아닌지?
+    // 4. 결국, Supabase Read의 Filtering 기능 사용할 때 어떻게 할 것인가?
+    // 5. 검색 기능과의 차별점을 둘 것인가? (선택 사항)
+    const handleCategoryChange = (value: string) => {
+        console.log("category : ", category);
+
+        // http://localhost:5173/?category=start-up
+        if (value === category) {
+            // => 선택한 항목 재선택한 것이므로 무시
+            return;
+        } else {
+        }
+        if (value === "") setSearchParams({});
+        else setSearchParams({ category: value });
+    };
 
     const moveToPage = async () => {
         // 1. 로그인 여부 체크
@@ -50,13 +71,6 @@ function App() {
         }
     };
 
-    // 1. 전체 항목을 클릭했을 경우, "전체"라는 항목의 value 값을 어떻게 할 것인가?
-    // 2. 이미 선택된 항목에 대해 즉, 선택된 항목 재선택시 어떻게 할 것인가?
-    // 3. 도메인 즉, URL에 카테고리 value 값을 보여줄 것인지 아닌지?
-    // 4. 결국, Supabase Read의 Filtering 기능 사용할 때 어떻게 할 것인가?
-    // 5. 검색 기능과의 차별점을 둘 것인가? (선택 사항)
-    const handleCategoryChange = () => {};
-
     const fetchTopics = async () => {
         try {
             const { data, error } = await supabase.from("topics").select("*").eq("status", "PUBLISH");
@@ -77,7 +91,7 @@ function App() {
 
     useEffect(() => {
         fetchTopics();
-    }, []);
+    }, [category]);
 
     return (
         <div className="w-full max-w-[1328px] h-full flex items-start py-6 gap-6">
@@ -87,14 +101,14 @@ function App() {
                     <ChevronDown />
                 </div>
                 <div className="flex flex-col gap-2">
-                    <Button className="flex justify-start text-white bg-card hover:bg-card hover:text-white hover:pl-6 duration-500">
-                        <List />
-                        전체
-                    </Button>
-                    {CATEGORIES.map((category) => {
+                    {CATEGORIES.map((category, index) => {
                         const IconComponent = category.icon;
                         return (
-                            <Button className="flex justify-start text-neutral-500 bg-transparent hover:bg-card hover:text-white hover:pl-6 duration-500">
+                            <Button
+                                key={index}
+                                className={`${category.value === String(category) && "pl-6! text-white bg-card"} flex justify-start text-neutral-500 bg-transparent hover:bg-card hover:text-white hover:pl-6 duration-500`}
+                                onClick={() => handleCategoryChange(category.value)}
+                            >
                                 <IconComponent />
                                 {category.label}
                             </Button>

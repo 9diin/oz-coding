@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useAuthStore } from "./store/auth";
+import supabase from "./utils/supabase";
 
 import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, PencilLine, Rocket, Search } from "lucide-react";
 import { Button, Input } from "./components/ui";
 import { HotTopic, NewTopic } from "./components/topic";
 import { toast } from "sonner";
-import supabase from "./utils/supabase";
 import type { Topic } from "@/types";
 
 const CATEGORIES = [

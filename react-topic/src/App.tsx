@@ -28,6 +28,7 @@ function App() {
     const category = searchParams.get("category") || "";
 
     const [topics, setTopics] = useState<Topic[]>([]);
+    const [searchValue, setSearchValue] = useState<string>("");
 
     // 1. 전체 항목을 클릭했을 경우, "전체"라는 항목의 value 값을 어떻게 할 것인가?
     // 2. 이미 선택된 항목에 대해 즉, 선택된 항목 재선택시 어떻게 할 것인가?
@@ -35,16 +36,14 @@ function App() {
     // 4. 결국, Supabase Read의 Filtering 기능 사용할 때 어떻게 할 것인가?
     // 5. 검색 기능과의 차별점을 둘 것인가? (선택 사항)
     const handleCategoryChange = (value: string) => {
-        console.log("category : ", category);
-
         // http://localhost:5173/?category=start-up
-        if (value === category) {
-            // => 선택한 항목 재선택한 것이므로 무시
-            return;
-        } else {
-        }
-        if (value === "") setSearchParams({});
+        if (value === category) return; // => 선택한 항목 재선택한 것이므로 무시
+        else if (value === "") setSearchParams({});
         else setSearchParams({ category: value });
+    };
+
+    const handleSearch = () => {
+        fetchTopics(searchValue);
     };
 
     const moveToPage = async () => {
@@ -71,9 +70,19 @@ function App() {
         }
     };
 
-    const fetchTopics = async () => {
+    const fetchTopics = async (searchValue?: string) => {
         try {
-            const { data, error } = await supabase.from("topics").select("*").eq("status", "PUBLISH");
+            const query = supabase.from("topics").select("*").eq("status", "PUBLISH");
+
+            if (searchValue && searchValue.trim() !== "") {
+                query.like("title", `%${searchValue}%`);
+            }
+
+            if (category && category.trim() !== "") {
+                query.eq("category", category);
+            }
+
+            const { data, error } = await query;
 
             if (error) {
                 toast.error(error.message);
@@ -101,16 +110,18 @@ function App() {
                     <ChevronDown />
                 </div>
                 <div className="flex flex-col gap-2">
-                    {CATEGORIES.map((category, index) => {
-                        const IconComponent = category.icon;
+                    {CATEGORIES.map((item, index) => {
+                        const IconComponent = item.icon;
+                        const isActive = item.value === category;
+
                         return (
                             <Button
                                 key={index}
-                                className={`${category.value === String(category) && "pl-6! text-white bg-card"} flex justify-start text-neutral-500 bg-transparent hover:bg-card hover:text-white hover:pl-6 duration-500`}
-                                onClick={() => handleCategoryChange(category.value)}
+                                className={`${isActive && "pl-6! text-white! bg-card!"} flex justify-start text-neutral-500 bg-transparent hover:bg-card hover:text-white hover:pl-6 duration-500`}
+                                onClick={() => handleCategoryChange(item.value)}
                             >
                                 <IconComponent />
-                                {category.label}
+                                {item.label}
                             </Button>
                         );
                     })}
@@ -128,8 +139,8 @@ function App() {
                     {/* 검색창 */}
                     <div className="w-full max-w-lg flex items-center gap-2 border py-2 pl-4 pr-3 rounded-full">
                         <Search size={24} className="text-neutral-500 -mr-2" />
-                        <Input placeholder="관심 있는 클래스, 토픽 주제를 검색하세요." className="border-none bg-transparent! focus-visible:ring-0 placeholder:text-base" />
-                        <Button variant={"secondary"} className="rounded-full">
+                        <Input placeholder="관심 있는 클래스, 토픽 주제를 검색하세요." onChange={(event) => setSearchValue(event.target.value)} className="border-none bg-transparent! focus-visible:ring-0 placeholder:text-base" />
+                        <Button variant={"secondary"} className="rounded-full" onClick={handleSearch}>
                             검색
                         </Button>
                     </div>
@@ -166,7 +177,13 @@ function App() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 gap-6">
-                            {topics.map((topic) => (
+                            {/* 둘 중 하나의 방법으로 최신순으로 나열한다. */}
+                            {topics
+                                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                                .map((topic) => (
+                                    <NewTopic props={topic} />
+                                ))}
+                            {[...topics].reverse().map((topic) => (
                                 <NewTopic props={topic} />
                             ))}
                         </div>

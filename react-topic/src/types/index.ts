@@ -2,6 +2,7 @@ export interface User {
     id: string;
     email: string | undefined;
     role: string | undefined;
+    nickname: string;
 }
 
 export interface AuthStore {
@@ -19,4 +20,5 @@ export interface Topic {
     status: string;
     thumbnail: string;
     title: string;
+    authorName?: Promise<string>;
 }

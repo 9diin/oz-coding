@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router";
 import { useAuthStore } from "./store/auth";
 import supabase from "./utils/supabase";
 
-import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, PencilLine, Rocket, Search } from "lucide-react";
+import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, NotebookPen, PencilLine, Rocket, Search } from "lucide-react";
 import { Button, Input } from "./components/ui";
 import { HotTopic, NewTopic } from "./components/topic";
 import { toast } from "sonner";
@@ -89,9 +89,7 @@ function App() {
                 return;
             }
 
-            if (data) {
-                setTopics(data);
-            }
+            if (data) setTopics(data);
         } catch (error) {
             console.log(error);
             throw error;
@@ -194,6 +192,9 @@ function App() {
                 <PencilLine />
                 토픽 작성하기
             </Button>
+            {/* <Button>
+                <NotebookPen />
+            </Button> */}
         </div>
     );
 }

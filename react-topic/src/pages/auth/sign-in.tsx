@@ -53,6 +53,7 @@ function SignIn() {
                     id: user.id,
                     email: user.email,
                     role: user.role,
+                    nickname: user.user_metadata.display_name,
                 });
                 toast.success("로그인을 완료하였습니다.");
                 navigate("/"); // => 메인 페이지로 리디렉션

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import supabase from "@/utils/supabase";
 
@@ -21,6 +21,7 @@ const formSchema = z
         confirmPassword: z.string().min(8, {
             error: "비밀번호 확인을 입력해주세요.",
         }),
+        nickname: z.string().trim().regex(/^\S+$/, "공백을 포함할 수 없습니다.").min(2),
     })
     .superRefine(({ password, confirmPassword }, ctx) => {
         if (password !== confirmPassword) {
@@ -44,9 +45,40 @@ function SignUp() {
 
     const navigate = useNavigate();
     // 필수 동의항목 상태값
-    const [serviceAgreed, setServiceAgreed] = useState<boolean>(true); // 서비스 이용약관 동의 여부
-    const [privacyAgreed, setPrivacyAgreed] = useState<boolean>(true); // 개인정보 수집 및 이용동의 여부
-    const [marketingAgreed, setMarketingAgreed] = useState<boolean>(true); // 마케팅 및 광고 수신 동의 여부
+    const [serviceAgreed, setServiceAgreed] = useState<boolean>(false); // 서비스 이용약관 동의 여부
+    const [privacyAgreed, setPrivacyAgreed] = useState<boolean>(false); // 개인정보 수집 및 이용동의 여부
+    const [marketingAgreed, setMarketingAgreed] = useState<boolean>(false); // 마케팅 및 광고 수신 동의 여부
+
+    const handleCheckService = () => setServiceAgreed(!serviceAgreed);
+    const handleCheckPrivacy = () => setPrivacyAgreed(!privacyAgreed);
+    const handleCheckMarketing = () => setMarketingAgreed(!marketingAgreed);
+
+    // 컴포넌트 마운트 시에만 실행되도록 useEffect의 의존성은 비워둡니다. ([])
+    useEffect(() => {
+        // 1. 초기 세션 확인 (Initial Session Check)
+        // - 애플리케이션이 로드되거나 새로고침 되었을 때, Supabase에 저장된 현재 세션 정보를 확인합니다.
+        // - 세션이 유효하다면, 그 즉시 전역 상태(Zustand Store)에 사용자 정보를 설정합니다.
+        const checkSession = async () => {
+            // 현재 세션 정보를 비동기적으로 가져옵니다.
+            try {
+                const {
+                    data: { session },
+                } = await supabase.auth.getSession();
+
+                // 세션과 사용자 정보가 존재하면,
+                if (session?.user) {
+                    navigate("/"); // => 로그인된 상태라면, 메인 페이지로 리디렉션 or 현재 유저가 보고 있는 페이지로 리디렉션
+                }
+                // 세션이 없다면, setUser(null)을 할 필요는 없습니다. 리스너가 처리할 것입니다.
+            } catch (error) {
+                console.log(error);
+                throw error;
+            }
+        };
+
+        // 초기 세션 확인 함수를 즉시 호출합니다.
+        checkSession();
+    }, []);
 
     // 일반 회원가입
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -62,6 +94,11 @@ function SignUp() {
             } = await supabase.auth.signUp({
                 email: values.email,
                 password: values.password,
+                options: {
+                    data: {
+                        display_name: values.nickname,
+                    },
+                },
             });
 
             if (signUpError) {
@@ -71,6 +108,21 @@ function SignUp() {
 
             // user와 session 두 값 모두 null이 아닐 경우에만 회원가입이 완료되었음을 의미
             if (user && session) {
+                const { error: updateUserError } = await supabase.from("users").insert([
+                    {
+                        id: user.id,
+                        email: user.email,
+                        nickname: values.nickname,
+                        service_agreed: serviceAgreed,
+                        privacy_agreed: privacyAgreed,
+                        marketing_agreed: marketingAgreed,
+                    },
+                ]);
+
+                if (updateUserError) {
+                    toast.error(updateUserError.message);
+                }
+
                 // 회원가입 성공 시,
                 toast.success("회원가입을 완료하였습니다.");
                 navigate("/sign-in"); // => 로그인 페이지로 리디렉션
@@ -91,6 +143,22 @@ function SignUp() {
                 <CardContent>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="nickname"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <div className="flex items-center gap-1">
+                                            <Asterisk className="text-[#FA6859]" size={14} />
+                                            <FormLabel>닉네임</FormLabel>
+                                        </div>
+                                        <FormControl>
+                                            <Input placeholder="닉네임을 입력하세요." {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             <FormField
                                 control={form.control}
                                 name="email"
@@ -148,7 +216,7 @@ function SignUp() {
                                 {/* 서비스 이용약관 동의 */}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <Checkbox className="w-[18px] h-[18px]" />
+                                        <Checkbox className="w-[18px] h-[18px]" checked={serviceAgreed} onCheckedChange={handleCheckService} />
                                         <p>서비스 이용약관 동의</p>
                                     </div>
                                     <Button variant={"link"} className="p-0! gap-1 text-xs">
@@ -159,7 +227,7 @@ function SignUp() {
                                 {/* 개인정보 수집 및 이용동의 */}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <Checkbox className="w-[18px] h-[18px]" />
+                                        <Checkbox className="w-[18px] h-[18px]" checked={privacyAgreed} onCheckedChange={handleCheckPrivacy} />
                                         <p>개인정보 수집 및 이용동의</p>
                                     </div>
                                     <Button variant={"link"} className="p-0! gap-1 text-xs">
@@ -175,7 +243,7 @@ function SignUp() {
                                 {/* 서비스 이용약관 동의 */}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <Checkbox className="w-[18px] h-[18px]" />
+                                        <Checkbox className="w-[18px] h-[18px]" checked={marketingAgreed} onCheckedChange={handleCheckMarketing} />
                                         <p>마케팅 및 광고 수신 동의</p>
                                     </div>
                                     <Button variant={"link"} className="p-0! gap-1 text-xs">

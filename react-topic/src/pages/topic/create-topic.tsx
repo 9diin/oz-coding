@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { nanoid } from "nanoid";
 import supabase from "@/utils/supabase";
@@ -8,10 +8,12 @@ import { Button, Input, Select, SelectContent, SelectGroup, SelectItem, SelectLa
 import { ArrowLeft, Asterisk, BookOpenCheck, Image, ImageOff, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Block } from "@blocknote/core";
+import { useAuthStore } from "@/store/auth";
 
 function CreateTopic() {
     const { topic_id } = useParams();
     const navigate = useNavigate();
+    const user = useAuthStore((state) => state.user);
 
     const [title, setTitle] = useState<string>("");
     const [content, setContent] = useState<Block[]>([]);
@@ -20,6 +22,33 @@ function CreateTopic() {
     // => File 타입의 원본 데이터를 받음
     // => Supabase의 이미지만 관리하는 Storage에 전달받은 File을 저장 => URL 형식으로
     // => Supabase 데이터베이스에 저장 (in topics 테이블의 thumbnail 컬럼)
+
+    // 컴포넌트 마운트 시에만 실행되도록 useEffect의 의존성은 비워둡니다. ([])
+    useEffect(() => {
+        // 1. 초기 세션 확인 (Initial Session Check)
+        // - 애플리케이션이 로드되거나 새로고침 되었을 때, Supabase에 저장된 현재 세션 정보를 확인합니다.
+        // - 세션이 유효하다면, 그 즉시 전역 상태(Zustand Store)에 사용자 정보를 설정합니다.
+        const checkSession = async () => {
+            // 현재 세션 정보를 비동기적으로 가져옵니다.
+            try {
+                const {
+                    data: { session },
+                } = await supabase.auth.getSession();
+
+                // 세션과 사용자 정보가 존재하지 않으면,
+                if (!session?.user) {
+                    navigate("/sign-in"); // => 로그인된 상태라면, 메인 페이지로 리디렉션 or 현재 유저가 보고 있는 페이지로 리디렉션
+                }
+                // 세션이 없다면, setUser(null)을 할 필요는 없습니다. 리스너가 처리할 것입니다.
+            } catch (error) {
+                console.log(error);
+                throw error;
+            }
+        };
+
+        // 초기 세션 확인 함수를 즉시 호출합니다.
+        checkSession();
+    }, []);
 
     // 저장
     // [현재 우리 코드의 문제점]
@@ -61,7 +90,7 @@ function CreateTopic() {
 
         const { data, error } = await supabase
             .from("topics")
-            .update([{ title, category, thumbnail: thumbnailUrl, content: JSON.stringify(content), status: "TEMP" }])
+            .update([{ title, category, thumbnail: thumbnailUrl, authorName: user?.nickname, content: JSON.stringify(content), status: "TEMP" }])
             .eq("id", topic_id)
             .select();
 

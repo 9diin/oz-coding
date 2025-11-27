@@ -1,15 +1,17 @@
-import { useAuthStore } from "@/store/auth";
+import type { Topic } from "@/types";
 import { Separator } from "../ui";
 import { BadgeCheck } from "lucide-react";
 
-function UserInfo() {
-    const user = useAuthStore((state) => state.user);
+interface Props {
+    props: Topic;
+}
 
+function UserInfo({ props }: Props) {
     return (
         <div className="flex flex-col">
             <div className="flex items-center gap-1">
                 <BadgeCheck size={14} className="text-green-500 mb-0.5" />
-                <p className="mb-[3px]">{user?.email}</p>
+                {props && <p className="mb-[3px]">{props.authorName}</p>}
             </div>
             <div className="flex items-center text-neutral-500 text-xs gap-2">
                 <p>IT 및 기술분야</p>

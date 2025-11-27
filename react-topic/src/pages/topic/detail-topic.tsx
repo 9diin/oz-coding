@@ -88,11 +88,11 @@ function DetailTopic() {
                         <Button variant={"outline"} size={"icon"} onClick={() => navigate("/")}>
                             <ArrowLeft />
                         </Button>
-
-                        <Button variant={"outline"} size={"icon"} className="bg-green-900/50!" onClick={() => navigate(`/topic/${topic?.id}/update`)}>
-                            <SquarePen />
-                        </Button>
-
+                        {user?.id === topic?.author && (
+                            <Button variant={"outline"} size={"icon"} className="bg-green-900/50!" onClick={() => navigate(`/topic/${topic?.id}/update`)}>
+                                <SquarePen />
+                            </Button>
+                        )}
                         {/* 삭제 */}
                         {user?.id === topic?.author && (
                             <AlertDialog>

@@ -1,11 +1,17 @@
-import { NavLink } from "react-router";
-import { Separator } from "../ui";
+import { NavLink, useNavigate } from "react-router";
 import { useAuthStore } from "@/store/auth";
+import { Separator } from "../ui";
 
 function AppHeader() {
     // const user = useAuthStore((state) => state.user);
     // const reset = useAuthStore((state) => state.reset);
     const { user, reset } = useAuthStore();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        reset();
+        navigate("/sign-in");
+    };
 
     return (
         <header className="fixed z-30 w-full h-12 min-h-12 flex items-center justify-center bg-[#121212] px-6">
@@ -23,7 +29,7 @@ function AppHeader() {
                         <div className="flex items-center gap-4">
                             <span>{user.email}</span>
                             <Separator orientation="vertical" className="h-3!" />
-                            <span className="cursor-pointer" onClick={reset}>
+                            <span className="cursor-pointer" onClick={handleLogout}>
                                 로그아웃
                             </span>
                         </div>

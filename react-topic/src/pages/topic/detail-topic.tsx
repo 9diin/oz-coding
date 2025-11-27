@@ -12,7 +12,7 @@ import dayjs from "dayjs";
 
 import { AppTextEditor } from "@/components/common";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, Button, Separator } from "@/components/ui";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, SquarePen, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/auth";
 
@@ -85,8 +85,12 @@ function DetailTopic() {
                 <div className="relative z-20 flex flex-col gap-6">
                     <div className="flex items-center gap-2 mt-6">
                         {/* 뒤로 가기 */}
-                        <Button variant={"outline"} size={"icon"}>
+                        <Button variant={"outline"} size={"icon"} onClick={() => navigate("/")}>
                             <ArrowLeft />
+                        </Button>
+
+                        <Button variant={"outline"} size={"icon"} className="bg-green-900/50!" onClick={() => navigate(`/topic/${topic?.id}/update`)}>
+                            <SquarePen />
                         </Button>
 
                         {/* 삭제 */}

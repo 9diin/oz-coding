@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MessageCircle, Bell, User, Twitter, Facebook, Instagram } from "lucide-react";
 
 function App() {
@@ -8,12 +8,15 @@ function App() {
     const boxes = [1, 2, 3, 4, 5, 6, 7, 8];
 
     const [hoveredBox, setHoveredBox] = useState(false);
+    const theme = useContext();
 
     useEffect(() => {
         console.log("렌더링되었습니다");
     }, []);
 
     useEffect(() => {
+        console.log("theme: ", theme);
+
         if (hoveredBox !== null) {
             console.log(`마우스가 ${hoveredBox}번 박스 위에 있습니다.`);
         } else {

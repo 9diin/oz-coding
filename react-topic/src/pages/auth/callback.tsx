@@ -29,6 +29,7 @@ function AuthCallback() {
                         id: session.user.id,
                         email: session.user.email as string,
                         role: session.user.role as string,
+                        nickname: session.user.user_metadata.display_name as string,
                     });
                     setTimeout(() => {
                         navigate("/");

@@ -1,5 +1,5 @@
-import { UserInfo } from "./user-info";
-import { Card } from "../ui";
+import { Card, Separator } from "../ui";
+import { BadgeCheck } from "lucide-react";
 
 function HotTopic() {
     return (
@@ -11,7 +11,18 @@ function HotTopic() {
                 </p>
                 <div className="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent rounded-b-lg"></div>
             </div>
-            <UserInfo />
+            {/* <UserInfo props={props} /> */}
+            <div className="flex flex-col">
+                <div className="flex items-center gap-1">
+                    <BadgeCheck size={14} className="text-green-500 mb-0.5" />
+                    <p className="mb-[3px] text-neutral-500">알 수 없는 사용자</p>
+                </div>
+                <div className="flex items-center text-neutral-500 text-xs gap-2">
+                    <p>IT 및 기술분야</p>
+                    <Separator orientation="vertical" className="h-3!" />
+                    <p>소프트웨어 엔지니어</p>
+                </div>
+            </div>
         </Card>
     );
 }

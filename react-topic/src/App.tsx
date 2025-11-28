@@ -200,9 +200,9 @@ function App() {
                                 .map((topic) => (
                                     <NewTopic props={topic} />
                                 ))}
-                            {[...topics].reverse().map((topic) => (
+                            {/* {[...topics].reverse().map((topic) => (
                                 <NewTopic props={topic} />
-                            ))}
+                            ))} */}
                         </div>
                     )}
                 </section>

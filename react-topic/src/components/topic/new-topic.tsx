@@ -44,7 +44,7 @@ function NewTopic({ props }: Props) {
     return (
         <Card className="p-4 gap-4" onClick={() => navigate(`/topic/${props.id}`)}>
             <div className="h-fit flex items-center gap-4">
-                <div className="h-full flex flex-col justify-between">
+                <div className="h-full flex flex-1 flex-col justify-between">
                     {/* 제목 */}
                     <div className="flex flex-col">
                         <CaseSensitive size={16} className="text-neutral-500" />

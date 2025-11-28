@@ -20,5 +20,5 @@ export interface Topic {
     status: string;
     thumbnail: string;
     title: string;
-    authorName?: Promise<string>;
+    author_name?: string;
 }

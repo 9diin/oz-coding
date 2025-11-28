@@ -11,7 +11,7 @@ function UserInfo({ props }: Props) {
         <div className="flex flex-col">
             <div className="flex items-center gap-1">
                 <BadgeCheck size={14} className="text-green-500 mb-0.5" />
-                {props && <p className="mb-[3px]">{props.authorName ? props.authorName : "알 수 없는 사용자"}</p>}
+                {props && <p className="mb-[3px]">{props.author_name ? props.author_name : "알 수 없는 사용자"}</p>}
             </div>
             <div className="flex items-center text-neutral-500 text-xs gap-2">
                 <p>IT 및 기술분야</p>

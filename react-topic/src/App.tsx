@@ -8,6 +8,7 @@ import { Badge, Button, Dialog, DialogClose, DialogContent, DialogDescription, D
 import { HotTopic, NewTopic } from "./components/topic";
 import { toast } from "sonner";
 import type { Topic } from "@/types";
+import { AppNodataMessage } from "./components/common";
 
 const CATEGORIES = [
     { icon: List, label: "전체", value: "" },
@@ -28,6 +29,7 @@ function App() {
     const category = searchParams.get("category") || "";
 
     const [topics, setTopics] = useState<Topic[]>([]);
+    const [drafts, setDrafts] = useState<Topic[]>([]);
     const [searchValue, setSearchValue] = useState<string>("");
 
     // 1. 전체 항목을 클릭했을 경우, "전체"라는 항목의 value 값을 어떻게 할 것인가?
@@ -56,7 +58,7 @@ function App() {
         // 토픽 작성하기 버튼 클릭 시, (빈)토픽 생성
         const { data, error } = await supabase
             .from("topics")
-            .insert([{ author: user.id, title: null, category: null, thumbnail: null, content: null, status: "TEMP" }])
+            .insert([{ author: user.id, author_name: user.nickname, title: null, category: null, thumbnail: null, content: null, status: "TEMP" }])
             .select();
 
         if (error) {
@@ -96,7 +98,26 @@ function App() {
         }
     };
 
+    const fetchDrafts = async () => {
+        if (!user) return;
+
+        try {
+            const { data, error } = await supabase.from("topics").select("*").eq("author", user.id).eq("status", "TEMP");
+
+            if (error) {
+                toast.error(error.message);
+                return;
+            }
+
+            if (data) setDrafts(data);
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
+        if (user) fetchDrafts();
         fetchTopics();
     }, [category]);
 
@@ -169,10 +190,7 @@ function App() {
                         <p className="text-neutral-500 text-base">새로운 시선으로, 새로운 이야기를 시작하세요. 지금 바로 당신만의 토픽을 작성해보세요.</p>
                     </div>
                     {topics.length === 0 ? (
-                        <div className="w-full flex-1 flex flex-col items-center justify-center gap-2">
-                            <img src="/vite.svg" alt="" className="w-6 h-6 opacity-50" />
-                            <p className="text-neutral-500/50">조회 가능한 데이터가 없습니다.</p>
-                        </div>
+                        <AppNodataMessage />
                     ) : (
                         <div className="grid grid-cols-2 gap-6">
                             {/* 둘 중 하나의 방법으로 최신순으로 나열한다. */}
@@ -193,106 +211,54 @@ function App() {
                     <PencilLine />
                     토픽 작성하기
                 </Button>
-                <Dialog>
-                    <DialogTrigger>
-                        <Button variant={"outline"} size={"icon"} className="rounded-full p-5!">
-                            <NotebookPen />
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>임시 저장된 토픽</DialogTitle>
-                            <DialogDescription>임시 저장된 토픽 목록입니다. 이어서 작성하거나 삭제할 수 있습니다.</DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-3">
-                            <div className="flex items-center gap-2">
-                                <p>임시 저장</p>
-                                <p className="text-base text-green-600 -mr-1.5">10</p>
-                                <p>건</p>
-                            </div>
-                            <Separator />
-                            <div className="min-h-80 h-80 flex flex-col items-center justify-start gap-3 overflow-y-scroll">
-                                <div className="w-full flex items-center justify-between py-2 px-4 rounded-md bg-card/50 cursor-pointer">
-                                    <div className="flex items-start gap-2">
-                                        <Badge className="w-5 h-5 mt-[3px] rounded-sm text-white bg-[#E26F24]">1</Badge>
-                                        <div className="flex flex-col">
-                                            <p className="line-clamp-1">임시 저장된 토픽의 제목입니다.</p>
-                                            <p className="text-xs text-neutral-500">작성일: 2025. 11. 28</p>
-                                        </div>
-                                    </div>
-                                    <Badge variant={"outline"}>작성중</Badge>
+                {user && (
+                    <Dialog>
+                        <DialogTrigger>
+                            <Button variant={"outline"} size={"icon"} className="rounded-full p-5!">
+                                <NotebookPen />
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>임시 저장된 토픽</DialogTitle>
+                                <DialogDescription>임시 저장된 토픽 목록입니다. 이어서 작성하거나 삭제할 수 있습니다.</DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-3">
+                                <div className="flex items-center gap-2">
+                                    <p>임시 저장</p>
+                                    <p className="text-base text-green-600 -mr-1.5">{drafts.length}</p>
+                                    <p>건</p>
                                 </div>
-                                <div className="w-full flex items-center justify-between py-2 px-4 rounded-md bg-card/50 cursor-pointer">
-                                    <div className="flex items-start gap-2">
-                                        <Badge className="w-5 h-5 mt-[3px] rounded-sm text-white bg-[#E26F24]">1</Badge>
-                                        <div className="flex flex-col">
-                                            <p className="line-clamp-1">임시 저장된 토픽의 제목입니다.</p>
-                                            <p className="text-xs text-neutral-500">작성일: 2025. 11. 28</p>
-                                        </div>
-                                    </div>
-                                    <Badge variant={"outline"}>작성중</Badge>
-                                </div>
-                                <div className="w-full flex items-center justify-between py-2 px-4 rounded-md bg-card/50 cursor-pointer">
-                                    <div className="flex items-start gap-2">
-                                        <Badge className="w-5 h-5 mt-[3px] rounded-sm text-white bg-[#E26F24]">1</Badge>
-                                        <div className="flex flex-col">
-                                            <p className="line-clamp-1">임시 저장된 토픽의 제목입니다.</p>
-                                            <p className="text-xs text-neutral-500">작성일: 2025. 11. 28</p>
-                                        </div>
-                                    </div>
-                                    <Badge variant={"outline"}>작성중</Badge>
-                                </div>
-                                <div className="w-full flex items-center justify-between py-2 px-4 rounded-md bg-card/50 cursor-pointer">
-                                    <div className="flex items-start gap-2">
-                                        <Badge className="w-5 h-5 mt-[3px] rounded-sm text-white bg-[#E26F24]">1</Badge>
-                                        <div className="flex flex-col">
-                                            <p className="line-clamp-1">임시 저장된 토픽의 제목입니다.</p>
-                                            <p className="text-xs text-neutral-500">작성일: 2025. 11. 28</p>
-                                        </div>
-                                    </div>
-                                    <Badge variant={"outline"}>작성중</Badge>
-                                </div>
-                                <div className="w-full flex items-center justify-between py-2 px-4 rounded-md bg-card/50 cursor-pointer">
-                                    <div className="flex items-start gap-2">
-                                        <Badge className="w-5 h-5 mt-[3px] rounded-sm text-white bg-[#E26F24]">1</Badge>
-                                        <div className="flex flex-col">
-                                            <p className="line-clamp-1">임시 저장된 토픽의 제목입니다.</p>
-                                            <p className="text-xs text-neutral-500">작성일: 2025. 11. 28</p>
-                                        </div>
-                                    </div>
-                                    <Badge variant={"outline"}>작성중</Badge>
-                                </div>
-                                <div className="w-full flex items-center justify-between py-2 px-4 rounded-md bg-card/50 cursor-pointer">
-                                    <div className="flex items-start gap-2">
-                                        <Badge className="w-5 h-5 mt-[3px] rounded-sm text-white bg-[#E26F24]">1</Badge>
-                                        <div className="flex flex-col">
-                                            <p className="line-clamp-1">임시 저장된 토픽의 제목입니다.</p>
-                                            <p className="text-xs text-neutral-500">작성일: 2025. 11. 28</p>
-                                        </div>
-                                    </div>
-                                    <Badge variant={"outline"}>작성중</Badge>
-                                </div>
-                                <div className="w-full flex items-center justify-between py-2 px-4 rounded-md bg-card/50 cursor-pointer">
-                                    <div className="flex items-start gap-2">
-                                        <Badge className="w-5 h-5 mt-[3px] rounded-sm text-white bg-[#E26F24]">1</Badge>
-                                        <div className="flex flex-col">
-                                            <p className="line-clamp-1">임시 저장된 토픽의 제목입니다.</p>
-                                            <p className="text-xs text-neutral-500">작성일: 2025. 11. 28</p>
-                                        </div>
-                                    </div>
-                                    <Badge variant={"outline"}>작성중</Badge>
+                                <Separator />
+                                <div className="min-h-80 h-80 flex flex-col items-center justify-start gap-3 overflow-y-scroll">
+                                    {drafts.length === 0 ? (
+                                        <AppNodataMessage />
+                                    ) : (
+                                        drafts.map((draft: Topic) => (
+                                            <div className="w-full flex items-center justify-between py-2 px-4 rounded-md bg-card/50 cursor-pointer">
+                                                <div className="flex items-start gap-2">
+                                                    <Badge className="w-5 h-5 mt-[3px] rounded-sm text-white bg-[#E26F24]">1</Badge>
+                                                    <div className="flex flex-col">
+                                                        <p className="line-clamp-1">임시 저장된 토픽의 제목입니다.</p>
+                                                        <p className="text-xs text-neutral-500">작성일: 2025. 11. 28</p>
+                                                    </div>
+                                                </div>
+                                                <Badge variant={"outline"}>작성중</Badge>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                             </div>
-                        </div>
-                        <DialogFooter>
-                            <DialogClose asChild>
-                                <Button type="button" variant={"outline"}>
-                                    닫기
-                                </Button>
-                            </DialogClose>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button type="button" variant={"outline"}>
+                                        닫기
+                                    </Button>
+                                </DialogClose>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                )}
             </div>
         </div>
     );

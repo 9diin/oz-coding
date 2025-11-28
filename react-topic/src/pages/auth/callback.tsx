@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-// import { useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useAuthStore } from "@/store/auth";
 import supabase from "@/utils/supabase";
 import { Button, Spinner } from "@/components/ui";
@@ -7,11 +7,10 @@ import { Button, Spinner } from "@/components/ui";
 function AuthCallback() {
     // Zustand(또는 다른 상태 관리 라이브러리)에서 사용자 정보를 설정하는 함수를 가져옵니다.
     const setUser = useAuthStore((state) => state.setUser);
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     // 컴포넌트 마운트 시에만 실행되도록 useEffect의 의존성은 비워둡니다. ([])
     useEffect(() => {
-        console.log("구글 로그인 중 ....");
         // 1. 초기 세션 확인 (Initial Session Check)
         // - 애플리케이션이 로드되거나 새로고침 되었을 때, Supabase에 저장된 현재 세션 정보를 확인합니다.
         // - 세션이 유효하다면, 그 즉시 전역 상태(Zustand Store)에 사용자 정보를 설정합니다.
@@ -33,9 +32,7 @@ function AuthCallback() {
                         nickname: session.user.user_metadata.display_name as string,
                     });
                     setTimeout(() => {
-                        console.log("구글 로그인 중 ....");
-
-                        // navigate("/");
+                        navigate("/");
                     }, 2000);
                 }
                 // 세션이 없다면, setUser(null)을 할 필요는 없습니다. 리스너가 처리할 것입니다.

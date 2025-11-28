@@ -28,10 +28,12 @@ import {
 import { ArrowLeft, Asterisk, BookOpenCheck, Image, ImageOff, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Block } from "@blocknote/core";
+import { useAuthStore } from "@/store/auth";
 
 function UpdateTopic() {
     const { topic_id } = useParams();
     const navigate = useNavigate();
+    const user = useAuthStore((state) => state.user);
 
     const [title, setTitle] = useState<string>("");
     const [content, setContent] = useState<Block[]>([]);
@@ -112,7 +114,7 @@ function UpdateTopic() {
 
         const { data, error } = await supabase
             .from("topics")
-            .update([{ title, category, thumbnail: thumbnailUrl, content: JSON.stringify(content), status: "TEMP" }])
+            .update([{ title, category, thumbnail: thumbnailUrl, content: JSON.stringify(content), status: "TEMP", author_name: user?.nickname }])
             .eq("id", topic_id)
             .select();
 
@@ -164,7 +166,7 @@ function UpdateTopic() {
 
         const { data, error } = await supabase
             .from("topics")
-            .update([{ title, category, thumbnail: thumbnailUrl, content: JSON.stringify(content), status: "PUBLISH" }])
+            .update([{ title, category, thumbnail: thumbnailUrl, content: JSON.stringify(content), status: "PUBLISH", author_name: user?.nickname }])
             .eq("id", topic_id)
             .select();
 

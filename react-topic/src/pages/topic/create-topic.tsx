@@ -110,7 +110,7 @@ function CreateTopic() {
 
         const { data, error } = await supabase
             .from("topics")
-            .update([{ title, category, thumbnail: thumbnailUrl, authorName: user?.nickname, content: JSON.stringify(content), status: "TEMP" }])
+            .update([{ title, category, thumbnail: thumbnailUrl, author_name: user?.nickname, content: JSON.stringify(content), status: "TEMP" }])
             .eq("id", topic_id)
             .select();
 
@@ -162,7 +162,7 @@ function CreateTopic() {
 
         const { data, error } = await supabase
             .from("topics")
-            .update([{ title, category, thumbnail: thumbnailUrl, content: JSON.stringify(content), status: "PUBLISH" }])
+            .update([{ title, category, thumbnail: thumbnailUrl, content: JSON.stringify(content), status: "PUBLISH", author_name: user?.nickname }])
             .eq("id", topic_id)
             .select();
 

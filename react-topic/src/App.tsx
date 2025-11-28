@@ -3,12 +3,13 @@ import { useNavigate, useSearchParams } from "react-router";
 import { useAuthStore } from "./store/auth";
 import supabase from "./utils/supabase";
 
-import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, NotebookPen, PencilLine, Rocket, Search } from "lucide-react";
-import { Badge, Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Input, Separator } from "./components/ui";
+import { AppNodataMessage } from "./components/common";
 import { HotTopic, NewTopic } from "./components/topic";
+import { Badge, Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Input, Separator } from "./components/ui";
+import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, NotebookPen, PencilLine, Rocket, Search } from "lucide-react";
 import { toast } from "sonner";
 import type { Topic } from "@/types";
-import { AppNodataMessage } from "./components/common";
+import dayjs from "dayjs";
 
 const CATEGORIES = [
     { icon: List, label: "전체", value: "" },
@@ -234,13 +235,13 @@ function App() {
                                     {drafts.length === 0 ? (
                                         <AppNodataMessage />
                                     ) : (
-                                        drafts.map((draft: Topic) => (
-                                            <div className="w-full flex items-center justify-between py-2 px-4 rounded-md bg-card/50 cursor-pointer">
+                                        drafts.map((draft: Topic, index: number) => (
+                                            <div className="w-full flex items-center justify-between py-2 px-4 rounded-md bg-card/50 cursor-pointer" onClick={() => navigate(`/topic/${draft.id}/update`)}>
                                                 <div className="flex items-start gap-2">
-                                                    <Badge className="w-5 h-5 mt-[3px] rounded-sm text-white bg-[#E26F24]">1</Badge>
+                                                    <Badge className="w-5 h-5 mt-[3px] rounded-sm text-white bg-[#E26F24]">{index + 1}</Badge>
                                                     <div className="flex flex-col">
-                                                        <p className="line-clamp-1">임시 저장된 토픽의 제목입니다.</p>
-                                                        <p className="text-xs text-neutral-500">작성일: 2025. 11. 28</p>
+                                                        <p className="line-clamp-1">{draft.title ?? "등록된 토픽 제목이 없습니다."}</p>
+                                                        <p className="text-xs text-neutral-500">작성일: {dayjs(draft.created_at).format("YYYY. MM. DD")}</p>
                                                     </div>
                                                 </div>
                                                 <Badge variant={"outline"}>작성중</Badge>

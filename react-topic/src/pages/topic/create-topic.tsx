@@ -4,7 +4,27 @@ import { nanoid } from "nanoid";
 import supabase from "@/utils/supabase";
 
 import { AppTextEditor } from "@/components/common";
-import { Button, Input, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, Separator } from "@/components/ui";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+    Button,
+    Input,
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+    Separator,
+} from "@/components/ui";
 import { ArrowLeft, Asterisk, BookOpenCheck, Image, ImageOff, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Block } from "@blocknote/core";
@@ -158,6 +178,30 @@ function CreateTopic() {
         }
     };
 
+    // 토픽 삭제
+    // 토픽을 작성한 사람의 user_id와 (현재, 우리 Supabase Topics 데이터 테이블에서는 author 컬럼으로 관리 중)
+    // 로그인한 유저의 user_id가 일치할 경우에만, 본인이 작성한 글을 삭제하겠다는 것을 의미
+    const handleDelete = async () => {
+        // // 방어 코드
+        // if (user?.id !== topic?.author) {
+        //     return;
+        // }
+
+        try {
+            const { error } = await supabase.from("topics").delete().eq("id", topic_id);
+
+            if (error) {
+                toast.error(error.message);
+                return;
+            }
+            toast.success("토픽 삭제를 완료하였습니다.");
+            navigate("/"); // 메인 페이지 리디렉션
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    };
+
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     // 파일 변화 감지 및 상태값 할당
@@ -283,9 +327,25 @@ function CreateTopic() {
                 </div>
             </div>
             <div className="fixed bottom-12 flex items-center gap-2">
-                <Button variant={"outline"} size={"icon"}>
-                    <ArrowLeft />
-                </Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant={"outline"} size={"icon"}>
+                            <ArrowLeft />
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>되돌아가시겠습니까?</AlertDialogTitle>
+                            <AlertDialogDescription>뒤로 가시면 작성 중인 토픽의 모든 내용이 초기화됩니다.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>닫기</AlertDialogCancel>
+                            <AlertDialogAction className="bg-red-900/50 text-white border hover:bg-red-800/50" onClick={() => navigate("/")}>
+                                확인
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
                 <Button variant={"outline"} className="px-5! bg-amber-900/50!" onClick={handleSave}>
                     <Save />
                     저장
@@ -295,9 +355,25 @@ function CreateTopic() {
                     발행
                 </Button>
                 <Separator orientation="vertical" className="h-5!" />
-                <Button variant={"outline"} size={"icon"} className="bg-red-900/50!">
-                    <Trash2 />
-                </Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant={"outline"} size={"icon"} className="bg-red-900/50!">
+                            <Trash2 />
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>정말 해당 토픽을 삭제하시겠습니까?</AlertDialogTitle>
+                            <AlertDialogDescription>삭제하시면 해당 토픽의 모든 내용이 영구적으로 삭제되어 복구할 수 없습니다.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>닫기</AlertDialogCancel>
+                            <AlertDialogAction className="bg-red-900/50 text-white border hover:bg-red-800/50" onClick={handleDelete}>
+                                삭제
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </main>
     );
